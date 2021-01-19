@@ -2,7 +2,7 @@
 # Version 0.0
 # 
 #funzione di parallelizzazione dei processi.
-function forky() {
+function forky () {
    local num_par_procs
     if [[ -z $1 ]] ; then
        num_par_procs=8
