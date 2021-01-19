@@ -1,10 +1,7 @@
-#!/bin/bash 
-# THIS IS THE VERY FIRST VERSION IT ALLOWS TO BUILD A LIBRARY OF CYCLO PENTAPEPTIDES CYCLIZED BY A DISULFIDE BOND BETWEEN POSITION 1 AND 5.
-# IT WILL GENERATE 5 STRUCTURES OF EACH PEPTIDE.
-#
-#
-#Parallelization function for bash
-#usage: forky (number of processors to be used).
+#!/bin/bash
+# Version 0.0
+# 
+#funzione di parallelizzazione dei processi.
 function forky() {
    local num_par_procs
     if [[ -z $1 ]] ; then
@@ -48,7 +45,8 @@ a1 = ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q','R', 
 for aa in a1:
  for ab in a1:
   for ac in a1:
-   print 'C', aa, ab, ac, 'C'
+   for ad in a1:
+    print aa, ab, ac, ad
 " > tripep.py
 
 chmod 755 tripep.py
@@ -69,23 +67,23 @@ class mymodel(allhmodel):
        #self.patch(residue_type='ACE', residues=self.residues['1'])
        #Standard C terminal patch
        #self.patch(residue_type='CT2', residues=self.residues['5'])
-       self.patch(residue_type='DISU', residues=(self.residues['1'],
-                                                  self.residues['5']))
-       self.patch(residue_type='CTER', residues=self.residues['5']) 
+       #self.patch(residue_type='DISU', residues=(self.residues['1'],
+       #                                          self.residues['5']))
+       self.patch(residue_type='CTER', residues=self.residues['4']) 
        self.patch(residue_type='NTER', residues=self.residues['1'])
 log.verbose()    # request verbose output
 env = environ()  # create a new MODELLER environment to build this model in
 env.patch_default = False
 # directories for input atom files
 env.io.atom_files_directory = './:../atom_files'
-a = mymodel(env, alnfile='XXX.ali',
-              knowns='1triA', sequence='XXX',
+a = mymodel(env, alnfile='XXXX.ali',
+              knowns='1triA', sequence='XXXX',
               assess_methods=(assess.DOPE,
                               #soap_protein_od.Scorer(),
                               assess.GA341))
-#GENERATES 30 MODELS FOR EACH PEPTIDE
+#GENERATES 20 MODELS FOR EACH PEPTIDE
 a.starting_model = 1
-a.ending_model =  30
+a.ending_model =  20
 # Very thorough VTFM optimization:
 # a.library_schedule = autosched.slow
 # minimizzazione della struttura col conjugate gradient
@@ -154,55 +152,59 @@ echo ">P1;1triA
 structureX:1tri:1    :A:3  :A:templtrialanin:every organism:     :     
 AAA*
 
->P1;XXX
-sequence:XXX:1    : :3    : :targettripep:no organism:     :     
-XXX*
+>P1;XXXX
+sequence:XXXX:1    : :3    : :targettripep:no organism:     :     
+XXXX*
 " > align.dat
 
 
-for file in `cat targets.dat`; do sed -e 's/XXX/'$file'/' align.dat > $file.ali ; done
-for file in `cat targets.dat`; do sed -e 's/XXX/'$file'/' modeller.dat > $file.py ; done
+for file in `cat targets.dat`; do sed -e 's/XXXX/'$file'/' align.dat > $file.ali ; done
+for file in `cat targets.dat`; do sed -e 's/XXXX/'$file'/' modeller.dat > $file.py ; done
 
+# 4 runs of modeller (depend on the CPUs you've in your ws)
+# modeller executable is mod9.25, modify this if you have another version)
 for file in *.py
 do
 mod9.25 $file &
-forky 20
+forky 4
 
 done
 wait
 
 rm -rf targets.dat modeller.dat #align.dat
-rm -rf ?????.D????????
-rm -rf ?????.V????????
+rm -rf ????.D????????
+rm -rf ????.V????????
 rm -rf *ini *sch *rsr *ali
 rm -rf *D.py tripep.py tripep.log D.log
 
 # GENERATES PDB STRUCTURES OF ALL THE PEPTIDES
 
-mkdir delenda
+# mkdir delenda
 mkdir goods
 for file in *.py
   do
    base=`basename $file .py`
-   buone=(`tail $base".log" | grep ranocchia | awk '{print $2}'`)
-   tutte=(`ls $base.B999900??.pdb`)
+   buone=(`cat $base".log" | grep ranocchia | awk '{print $2}'| head -n 1`)
+   # tutte=(`ls $base.B999900??.pdb`)
 
    mv ${buone[@]} goods
-   mv ${tutte[@]} delenda
+   # mv ${tutte[@]} delenda
 done
-
+rm -rf ????.B999900??.pdb
 mv goods/* .
 rm -rf goods
-rm -rf delenda
+#rm -rf delenda
 rm -rf *log
 
-for py in *.py
+
+for py in ????.py
 do
    num=1
    base=`basename $py .py`
      for file in `ls $base.B999900??.pdb`
      do
-     mv $file $base"_"$num"."pdb
+     mv $file $base"."pdb
      ((num++))
    done
 done
+rm -rf ????.py 1tri.pdb align.dat 
