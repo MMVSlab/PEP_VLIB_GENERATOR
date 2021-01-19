@@ -9,5 +9,7 @@ The workflow of the python/bash script is represented by the following steps:
 REQUIREMENTS: Python, bash, modeller v9.25 (other versions should work but you have to change executable name in this script)
 
 
-NOTE: this is versio 0.0, which means no options: it only generates linear tetrapeptides
+NOTE: this is versio 0.0, which means no options: it only generates 160000 linear tetrapeptides
+
+I would appreciate if you could cite this project in your reserch report|paper|thesis.
 
