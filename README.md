@@ -1,5 +1,8 @@
-# PEP_VLIB_GENERATOR
-Automated generator of virtual library of short peptides.
+# PEP_VLIB_GENERATOR, the automated generator of virtual library of short peptides.
+
+PURPOSE: It us usefull to generate a combinatorial virtual library of structurally-optimized short peptides in pdb format, for docking-based virtual screening.
+
+
 General schematic workflow of the python/bash script can be summarized by the following steps:
 1) Generation of all the peptide sequences from the combination of the 20 aminoacids. The number of sequences that will be generated and modelled will be 20^n, where "n" is the pepide lenght.
 2) Generation of a peptide structure to be used as a template for modeller.
